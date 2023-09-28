@@ -1,32 +1,21 @@
-import express from 'express';
+import express from 'express'
 import path from 'path';
-const app = express();
-const __dirname =path.resolve();
-import authRouter from './routes/auth.mjs'
-import feedRouter from './routes/feed.mjs'
-import commentRouter from './routes/comment.mjs'
-import postRouter from './routes/post.mjs'
+const __dirname = path.resolve();
 
-app.use(express.json());
+import apiv1Router from './apiv1/main.mjs'
+import apiv2Router from './apiv2/main.mjs'
 
-let token = "valid";
+const app = express()
 
-app.use('/api/v1', authRouter)
-app.use((req, res, next) => {
-    if (token === "valid") {
-        next();
-    } else {
-        res.send({ message: "invalid token" })
-    }
-});
+app.use(express.json()); // body parser
 
-app.use('/api/v1', postRouter)
-app.use('/api/v1', commentRouter)
-app.use('/api/v1', feedRouter)
+app.use("/api/v1", apiv1Router)
+app.use("/api/v2", apiv2Router)
 
-app.use('/', express.static(path.join(__dirname, 'public')));
 
-const PORT = process.env.PORT || 3000
+app.use(express.static(path.join(__dirname, 'public')))
+
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`)
 })
